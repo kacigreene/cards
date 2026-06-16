@@ -1,11 +1,8 @@
+import java.awt.*;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Point;
 import java.util.ArrayList;
-import java.awt.Font;
 
 class DrawPanel extends JPanel implements MouseListener {
 
@@ -14,8 +11,10 @@ class DrawPanel extends JPanel implements MouseListener {
     private ArrayList<Card> selected;
     private Rectangle reset;
     private Rectangle replace;
+    private int score;
 
     public DrawPanel() {
+        score = 0;
         selected = new ArrayList<Card>();
         cards = new Card[3][3];
         d = new Deck();
@@ -66,7 +65,15 @@ class DrawPanel extends JPanel implements MouseListener {
                 Rectangle cardHitBox = new Rectangle(x, y, cards[r][c].getImage().getWidth(), cards[r][c].getImage().getHeight());
                 cards[r][c].setHitbox(cardHitBox);
                 if (cards[r][c].getHighlight()) {
+
+                    if (eleven(selected)) {
+                        g.setColor(Color.GREEN);
+                    } else {
+                        g.setColor(Color.RED);
+                    }
+
                     g.drawRect(x, y, cardHitBox.width, cardHitBox.height);
+                    g.setColor(Color.BLACK);
                 }
                 x += 80;
             }
@@ -74,6 +81,7 @@ class DrawPanel extends JPanel implements MouseListener {
             y += 100;
         }
         g.setFont(new Font("Serif", Font.BOLD, 20));
+        g.drawString("Score: " + score, 300, 300);
         g.drawString("Number of cards left: " + d.getDeck().size(), 50, y + 50);
     }
     public boolean eleven(ArrayList<Card> select) {
@@ -162,6 +170,7 @@ class DrawPanel extends JPanel implements MouseListener {
                     System.out.println(selected);
                 }
                 if (eleven(selected) && replace.contains(p)) {
+                    score += 100;
                     for (int row = 0; row < cards.length; row++) {
                         for (int col = 0; col < cards[row].length; col++) {
                             if (selected.contains(cards[row][col])) {
@@ -180,6 +189,7 @@ class DrawPanel extends JPanel implements MouseListener {
         }
 
         if (reset.contains(p)) {
+            score = 0;
             d = new Deck();
             for (int r = 0; r< cards.length; r++) {
                 for (int c = 0; c< cards.length; c++) {
